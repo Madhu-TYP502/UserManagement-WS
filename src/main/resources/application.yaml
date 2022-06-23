@@ -1,0 +1,15 @@
+spring:  
+  application:
+    name: users-ws
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+  output.ansi.enabled: ALWAYS
+
+  data:
+    mongodb:
+      database: AdminDashboard
+      port: 27017
+      host: localhost
+
