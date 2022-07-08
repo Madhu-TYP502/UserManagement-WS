@@ -6,15 +6,16 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tyss.dashboard.users.mng.entities.UserEntity;
-import com.tyss.dashboard.users.mng.model.LoginRequestModel;
 import com.tyss.dashboard.users.mng.model.UserDto;
 import com.tyss.dashboard.users.mng.services.UserManagementServiceImpl;
 
@@ -32,10 +33,9 @@ public class UsersController {
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 	}
 
-	@PostMapping("add/user")
+	@PostMapping("add")
 	public ResponseEntity<String> createUser(@RequestBody UserDto addTrainerRequestModel) {
 
-		System.out.println("UsersController : createUser() executed");
 		return userManagementServiceImpl.addUser(mapper.map(addTrainerRequestModel, UserEntity.class));
 	}
 
@@ -44,37 +44,31 @@ public class UsersController {
 
 		return "UsersController working";
 	}
-
-	@PostMapping("login")
-	public String login(@RequestParam String phone) {
-
-		return "login details";
-	}
 	
-	@PostMapping("update/user")
-	public ResponseEntity<String> updateUser(@RequestBody UserEntity userEntity) {
+	@PutMapping("update")
+	public ResponseEntity<String> updateUser(@RequestBody UserEntity userEntity,@RequestParam String uid) {
 
 		System.out.println("UsersController : updateUser() executed");
-		return userManagementServiceImpl.editUser(userEntity);
+		return userManagementServiceImpl.editUser(userEntity,uid);
 	}
 
-	@GetMapping("get/user")
+	@GetMapping("get")
 	public ResponseEntity<UserEntity> viewUser(@RequestParam String phone) {
 
 		System.out.println("UsersController : viewUser() executed");
 		return userManagementServiceImpl.viewUser(phone);
 	}
 	
-	@GetMapping("get/all/users")
+	@GetMapping("get/all")
 	public ResponseEntity<List<UserEntity>> viewAllUsers() {
 
 		return userManagementServiceImpl.viewAllUsers();
 	}
 	
-	@PostMapping("delete/user")
-	public ResponseEntity<String> deleteUser(@RequestBody LoginRequestModel loginRequestModel) {
+	@DeleteMapping("delete")
+	public ResponseEntity<String> deleteUser(@RequestParam String uid){
 
-		return userManagementServiceImpl.deleteUser(loginRequestModel);
+		return userManagementServiceImpl.deleteUser(uid);
 	}
 
 }

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.tyss.dashboard.users.mng.data.repositories.BatchRepository;
 import com.tyss.dashboard.users.mng.data.repositories.UserRepository;
 import com.tyss.dashboard.users.mng.entities.UserEntity;
-import com.tyss.dashboard.users.mng.model.LoginRequestModel;
 
 @Service
 public class UserManagementServiceImpl implements UserManagementServices<Object> {
@@ -29,9 +28,8 @@ public class UserManagementServiceImpl implements UserManagementServices<Object>
 
 	@Autowired
 	MongoTemplate mongoTemplate;
-	
-	Logger logger = LoggerFactory.getLogger(UserManagementServiceImpl.class);
 
+	Logger logger = LoggerFactory.getLogger(UserManagementServiceImpl.class);
 
 	@Override
 	public ResponseEntity<String> addUser(UserEntity userEntity) {
@@ -44,9 +42,9 @@ public class UserManagementServiceImpl implements UserManagementServices<Object>
 
 			userEntity.setName(userEntity.getName().toLowerCase());
 			userEntity.setEmail(userEntity.getEmail().toLowerCase());
-			
+
 			userEntity.setId(UUID.randomUUID().toString());
-			
+
 			userEntity.setStatus("PENDING");
 
 			userRepository.save(userEntity);
@@ -59,41 +57,36 @@ public class UserManagementServiceImpl implements UserManagementServices<Object>
 	}
 
 	@Override
-	public ResponseEntity<String> editUser(UserEntity userEntity) {
+	public ResponseEntity<String> editUser(UserEntity userEntity,String uid) {
 
-		if (userRepository.existsByPhone(userEntity.getPhone())) {
-
-			userEntity.setId(userEntity.getPhone());
+		if (userRepository.existsById(uid)) {
+			
 			userRepository.save(userEntity);
 
 			return ResponseEntity.status(HttpStatus.ACCEPTED)
 					.body(userEntity.getRole() + " data updated susccesfully!!");
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-				.body(userEntity.getRole() + " with the given phone number do not exists!!!");
+				.body(userEntity.getRole() + " with the ID do not exists!!!");
 	}
 
 	@Override
-	public ResponseEntity<String> deleteUser(LoginRequestModel loginRequestModel) {
-		
-		logger.info("DELETE USER");
+	public ResponseEntity<String> deleteUser(String uid) {
 
-		logger.info("Email    : " + loginRequestModel.getEmail());
-		logger.info("Password : " + loginRequestModel.getPassword());
-		UserEntity userEntity = mongoTemplate.findOne(
-				new Query().addCriteria(
-						Criteria.where("email").is(loginRequestModel.getEmail()).and("phone").is(loginRequestModel.getPassword())),
-				UserEntity.class);
-			
-		if(userEntity!=null)
-		{
+		logger.info("DELETE USER");
+		
+	    System.out.println("DELETING : "+uid);
+
+		UserEntity userEntity = userRepository.findById(uid).get();
+
+		if (userEntity != null) {
 			userRepository.delete(userEntity);
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body("Trainer data deleted susccesfully!!");
 		}
 
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainer with the given email and phone do not exists!!!");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body("Trainer do not exists!!!");
 	}
-
 
 	@Override
 	public ResponseEntity<UserEntity> viewUser(String phone) {
@@ -116,6 +109,5 @@ public class UserManagementServiceImpl implements UserManagementServices<Object>
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(userEntities);
 	}
-
 
 }

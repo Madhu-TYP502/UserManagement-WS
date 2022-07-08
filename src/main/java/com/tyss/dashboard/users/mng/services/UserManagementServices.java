@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import com.tyss.dashboard.users.mng.entities.UserEntity;
-import com.tyss.dashboard.users.mng.model.LoginRequestModel;
 
 public interface UserManagementServices<T> {
 
@@ -15,8 +14,8 @@ public interface UserManagementServices<T> {
 
 	public ResponseEntity<String> addUser(UserEntity userEntity);
 
-	public ResponseEntity<String> editUser(UserEntity userEntity);
+	public ResponseEntity<String> editUser(UserEntity userEntity,String uid);
 
-	public ResponseEntity<String> deleteUser(LoginRequestModel loginRequestModel);
+	public ResponseEntity<String> deleteUser(String uid);
 
 }
